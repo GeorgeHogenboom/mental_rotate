@@ -1,15 +1,14 @@
 import os
-# Force SDL to center the Pygame window when it is created.
-os.environ["SDL_VIDEO_CENTERED"] = "1"
-
 import random
 import itertools
-import csv
 import pygame
 import sys
 import pandas as pd
-import time
-from imagegen import imagegen  # Use your fixed imagegen.py
+from imagegen import imagegen 
+
+# Force SDL to center the Pygame window when it is created.
+os.environ["SDL_VIDEO_CENTERED"] = "1"
+
 
 def is_correct(key_pressed, mirror_flag):
     """
@@ -208,11 +207,7 @@ def get_key():
     while True:
         event = pygame.event.wait()
         if event.type == pygame.KEYDOWN:
-            # Use event.unicode if available; fallback to pygame.key.name.
-            if event.unicode:
-                return event.unicode.lower()
-            else:
-                return pygame.key.name(event.key)
+                return pygame.key.name(event.key).lower()
         elif event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
@@ -230,8 +225,8 @@ def completionphase(screen):
 
     Returns:
         tuple: (user_input_hand, user_input_gender)
-            - user_input_hand (str): 'l' for left-handed or 'r' for right-handed.
-            - user_input_gender (str): 'f' for female or 'm' for male.
+            - user_input_hand: 'l' for left-handed or 'r' for right-handed.
+            - user_input_gender: 'f' for female or 'm' for male.
     """
     # Define valid options.
     gender_options = ['f', 'm']
@@ -286,8 +281,6 @@ def completionphase(screen):
 
 def pause_screen():
     font = pygame.font.Font(None, 36)
-
-
     screen = pygame.display.set_mode((1920, 1080), pygame.NOFRAME)
     screen.fill((0, 0, 0))
     font_large = pygame.font.SysFont("Arial", 30)
@@ -318,7 +311,7 @@ def run_rotation_experiment():
     categories = ['tools', 'non_tools']
     data_all_trials = []
 
-    # Create trial combinations (repeat them to reach the desired trial count)
+    # Create trial combinations
     combinations_tools = list(itertools.product(mirrored, angles, ['tools'])) * 10
     combinations_non_tools = list(itertools.product(mirrored, angles, ['non_tools'])) * 10
     combinations = combinations_tools + combinations_non_tools
@@ -345,7 +338,7 @@ def run_rotation_experiment():
 
         trial_counter += 1
         
-        # If response is incorrect, reappend the trial for additional measurement.
+        # If response is incorrect, reappend the trial.
         if result != 'correct':
             combinations.append(current_trial)
 
@@ -371,10 +364,6 @@ def run_rotation_experiment():
     save_data(data_all_trials,user_number)
 
 def main():
-
-    
-
-
     pygame.init()
     # Create a windowed fullscreen (borderless) window.
     screen = pygame.display.set_mode((1920, 1080), pygame.NOFRAME)
@@ -383,12 +372,14 @@ def main():
     # Run the instruction phase in pygame.
     instructionphase(screen)
     
+    
     # Run the training phase.
     trainingphase(screen)
     
     # Run the main experiment.
     run_rotation_experiment()
 
+    # Run the completionphase
     handedness, gender = completionphase(screen)
     print("Collected Data:")
     print("Handedness:", handedness)
